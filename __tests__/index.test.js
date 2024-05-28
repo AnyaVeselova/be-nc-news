@@ -31,3 +31,14 @@ describe("GET: /api/topics", () => {
       });
   });
 });
+
+describe("Generic errors", () => {
+  test("404: responds with not found error when endpoint does not exist  ", () => {
+    return request(app)
+      .get("/api/sdfdsafjds")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route not found");
+      });
+  });
+});
