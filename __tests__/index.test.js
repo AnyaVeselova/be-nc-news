@@ -62,12 +62,20 @@ describe.only("GET /api/articles/:article_id", () => {
         );
       });
   });
-  test("GET: 404 sends an appropriate status and error message when given a valid byt non-existent id", () => {
+  test("GET: 404 sends an appropriate status and error message when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/999")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("article was not found");
+      });
+  });
+  test("GET: 400 sends an appropriate status and error message when given an invalid id", () => {
+    return request(app)
+      .get("/api/articles/not-an-article")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
       });
   });
 });
