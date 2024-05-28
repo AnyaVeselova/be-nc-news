@@ -3,6 +3,7 @@ const data = require("../db/data/test-data");
 const db = require("../db/connection");
 const app = require("../app");
 const request = require("supertest");
+const endpointsJSON = require("../endpoints.json");
 require("jest-sorted");
 
 beforeEach(() => {
@@ -28,6 +29,17 @@ describe("GET: /api/topics", () => {
             description: expect.any(String),
           });
         });
+      });
+  });
+});
+
+describe("GET /api", () => {
+  test("200: responds with an object with all the available endpoints on the API", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual(endpointsJSON);
       });
   });
 });
