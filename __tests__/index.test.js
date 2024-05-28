@@ -62,10 +62,18 @@ describe.only("GET /api/articles/:article_id", () => {
         );
       });
   });
+  test("GET: 404 sends an appropriate status and error message when given a valid byt non-existent id", () => {
+    return request(app)
+      .get("/api/articles/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article was not found");
+      });
+  });
 });
 
 describe("Generic errors", () => {
-  test("404: responds with not found error when endpoint does not exist  ", () => {
+  test("GET: 404 responds with not found error when endpoint does not exist  ", () => {
     return request(app)
       .get("/api/sdfdsafjds")
       .expect(404)
