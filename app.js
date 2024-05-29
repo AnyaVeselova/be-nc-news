@@ -3,7 +3,7 @@ const { allEndpoints } = require("./controllers/endpoints.controllers");
 const {
   getArticleById,
   getAllArticles,
-  getComments,
+  getCommentsByArticleId,
 } = require("./controllers/articles.controllers");
 const express = require("express");
 
@@ -15,7 +15,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getAllArticles);
 app.get("/api", allEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
-app.get("/api/articles/:article_id/comments", getComments);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02") {

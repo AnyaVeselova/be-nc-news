@@ -1,7 +1,7 @@
 const {
   selectArticleById,
   setArticles,
-  setComments,
+  selectCommentsByArticleId,
 } = require("../models/articles.models");
 
 exports.getAllArticles = (req, res, next) => {
@@ -18,19 +18,19 @@ exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   selectArticleById(article_id)
     .then((article) => {
-      if (!article) {
-        return Promise.reject({ status: 404, msg: "article was not found" });
-      } else {
-        res.status(200).send({ article });
-      }
+      res.status(200).send({ article });
     })
     .catch(next);
 };
 
-exports.getComments = (req, res, next) => {
+//put it in another controller FOR comments
+exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
 
-  setComments(article_id)
+  selectArticleById(article_id)
+    .then(() => {
+      return selectCommentsByArticleId(article_id);
+    })
     .then(({ rows }) => {
       res.status(200).send(rows);
     })
