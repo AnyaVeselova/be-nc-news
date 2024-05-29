@@ -21,7 +21,7 @@ describe("GET: /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         const { topics } = body;
-        expect(topics).toHaveLength(3);
+        expect(topics).toHaveLength(data.topicData.length);
 
         topics.forEach((topic) => {
           expect(topic).toMatchObject({
@@ -44,14 +44,14 @@ describe("GET /api", () => {
   });
 });
 
-describe.only("GET: /api/articles", () => {
+describe("GET: /api/articles", () => {
   test("200: responds with an array of all articles without the body property", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(13);
+        expect(articles).toHaveLength(data.articleData.length);
 
         articles.forEach((article) => {
           expect(article).toMatchObject({
@@ -103,6 +103,31 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe.only("GET /api/articles/:article_id/comments", () => {
+  test("GET: 200 sends an array of comments to the client with the most recent comments first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveLength(
+          data.commentData.filter((comment) => comment.article_id === 1).length
+        );
+
+        body.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+        expect(body).toBeSortedBy("created_at");
       });
   });
 });
