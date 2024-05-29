@@ -18,7 +18,6 @@ exports.setArticles = () => {
     `;
 
   return db.query(formatedArticles).then(({ rows }) => {
-    console.log(rows);
     return rows;
   });
 };
