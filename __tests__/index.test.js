@@ -131,7 +131,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 
-  test("GET: 200 sends an empty array if the article_id exists but there aren not any comments at this id", () => {
+  test("GET: 200 sends an empty array if the article_id exists but there are not any comments at this id", () => {
     return request(app)
       .get("/api/articles/11/comments")
       .expect(200)
