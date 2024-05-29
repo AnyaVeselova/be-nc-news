@@ -1,5 +1,4 @@
-const { selectArticleById } = require("../models/selectArticleById.models");
-const { setArticles } = require("../models/setArticles.models");
+const { selectArticleById, setArticles } = require("../models/articles.models");
 
 exports.getAllArticles = (req, res, next) => {
   setArticles()
