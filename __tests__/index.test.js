@@ -186,6 +186,20 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+
+  test("POST: 400 responds with an appropriate error when article_id is of an invalid type", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "NC is the best software development bootcamp",
+    };
+    return request(app)
+      .post("/api/articles/nonsense/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
 
 describe("Generic errors", () => {
