@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 
 exports.setArticles = () => {
-  const fortatedArticles = `
+  const formatedArticles = `
     SELECT 
     articles.article_id,
     articles.title, 
@@ -17,7 +17,7 @@ exports.setArticles = () => {
     ORDER BY articles.created_at DESC;
     `;
 
-  return db.query(fortatedArticles).then(({ rows }) => {
+  return db.query(formatedArticles).then(({ rows }) => {
     console.log(rows);
     return rows;
   });
