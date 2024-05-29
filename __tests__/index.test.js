@@ -212,6 +212,7 @@ describe.only("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { updatedArticle } = body;
+
         expect(updatedArticle.votes).toBe(105);
       });
   });
