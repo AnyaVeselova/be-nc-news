@@ -51,7 +51,6 @@ describe.only("GET: /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        console.log(articles);
         expect(articles).toHaveLength(13);
 
         articles.forEach((article) => {
