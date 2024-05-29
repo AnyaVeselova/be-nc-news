@@ -32,10 +32,3 @@ exports.selectArticleById = (article_id) => {
       return rows[0];
     });
 };
-
-exports.selectCommentsByArticleId = (article_id) => {
-  return db.query(
-    "SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at",
-    [article_id]
-  );
-};

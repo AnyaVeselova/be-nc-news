@@ -131,7 +131,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 
-  test("GET: 200 sends an empty array if the article_id exists but there aren not any comments at this id", () => {
+  test("GET: 200 sends an empty array if the article_id exists but there are not any comments at this id", () => {
     return request(app)
       .get("/api/articles/11/comments")
       .expect(200)
@@ -154,6 +154,50 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST: 201 adds a new comment to a particular article", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "NC is the best software development bootcamp",
+    };
+
+    return request(app)
+      .post("/api/articles/11/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.body).toBe(
+          "NC is the best software development bootcamp"
+        );
+      });
+  });
+  test("POST: 400 responds with an appropriate error when provided a bad comment schema", () => {
+    return request(app)
+      .post("/api/articles/11/comments")
+      .send({ username: "butter_bridge" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+
+  test("POST: 400 responds with an appropriate error when article_id is of an invalid type", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "NC is the best software development bootcamp",
+    };
+    return request(app)
+      .post("/api/articles/nonsense/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
       });
   });
 });
