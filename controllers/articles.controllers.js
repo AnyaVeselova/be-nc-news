@@ -22,17 +22,3 @@ exports.getArticleById = (req, res, next) => {
     })
     .catch(next);
 };
-
-//put it in another controller FOR comments
-exports.getCommentsByArticleId = (req, res, next) => {
-  const { article_id } = req.params;
-
-  selectArticleById(article_id)
-    .then(() => {
-      return selectCommentsByArticleId(article_id);
-    })
-    .then(({ rows }) => {
-      res.status(200).send(rows);
-    })
-    .catch(next);
-};

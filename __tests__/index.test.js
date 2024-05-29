@@ -158,6 +158,36 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST: 201 adds a new comment to a particular article", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "NC is the best software development bootcamp",
+    };
+
+    return request(app)
+      .post("/api/articles/11/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.body).toBe(
+          "NC is the best software development bootcamp"
+        );
+      });
+  });
+  test("POST: 400 responds with an appropriate error when provided a bad comment schema", () => {
+    return request(app)
+      .post("/api/articles/11/comments")
+      .send({ username: "butter_bridge" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+});
+
 describe("Generic errors", () => {
   test("GET: 404 responds with not found error when endpoint does not exist  ", () => {
     return request(app)
