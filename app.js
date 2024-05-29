@@ -1,6 +1,6 @@
-const { getTopics } = require("./controllers/getTopics.controllers");
+const { getTopics } = require("./controllers/topics.controllers");
 const { allEndpoints } = require("./controllers/endpoints.controllers");
-const { getArticleById } = require("./controllers/getArticleById.controllers");
+const { getArticleById } = require("./controllers/articles.controllers");
 const express = require("express");
 
 const app = express();
