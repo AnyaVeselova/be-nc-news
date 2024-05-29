@@ -1,5 +1,8 @@
-const { selectArticleById } = require("../models/selectArticleById.models");
-const { setArticles } = require("../models/setArticles.models");
+const {
+  selectArticleById,
+  setArticles,
+  setComments,
+} = require("../models/articles.models");
 
 exports.getAllArticles = (req, res, next) => {
   setArticles()
@@ -20,6 +23,16 @@ exports.getArticleById = (req, res, next) => {
       } else {
         res.status(200).send({ article });
       }
+    })
+    .catch(next);
+};
+
+exports.getComments = (req, res, next) => {
+  const { article_id } = req.params;
+
+  setComments(article_id)
+    .then(({ rows }) => {
+      res.status(200).send(rows);
     })
     .catch(next);
 };
