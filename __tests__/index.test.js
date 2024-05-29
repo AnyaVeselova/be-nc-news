@@ -107,7 +107,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   test("GET: 200 sends an array of comments to the client with the most recent comments first", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -128,6 +128,23 @@ describe.only("GET /api/articles/:article_id/comments", () => {
           });
         });
         expect(body).toBeSortedBy("created_at");
+      });
+  });
+
+  test("GET:404 sends an appropriate status and error message when given a valid but non-existent article_id", () => {
+    return request(app)
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("article does not exist");
+      });
+  });
+  test("GET:400 responds with an appropriate error message when given an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/nonsense/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
       });
   });
 });
