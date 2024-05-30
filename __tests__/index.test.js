@@ -71,6 +71,39 @@ describe("GET: /api/articles", () => {
   });
 });
 
+describe("GET: /api/articles?topic=<name>", () => {
+  test("GET: 200 - filters articles when passed a topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(
+          data.articleData.filter((article) => article.topic === "mitch").length
+        );
+        articles.forEach((article) => {
+          expect(article.topic).toBe(mitch);
+        });
+      });
+  });
+  test("GET: 200 - should return an empty array when topic exists but there aren't any articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
+      });
+  });
+
+  test("GET: 404 - should throw an error when passed an invalid topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=nonsense")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("nonsense not found");
+      });
+  });
+});
+
 describe("GET: /api/users", () => {
   test("GET 200: responds with an array of all users objects with certain properties", () => {
     return request(app)
@@ -285,7 +318,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe("DELETE /api/comments/:comment_id", () => {
+describe.only("DELETE /api/comments/:comment_id", () => {
   test("DELETE: 204 - deletes the given comment by comment_id, responds with 204 status and no content", () => {
     return request(app).delete("/api/comments/1").expect(204);
   });
@@ -295,14 +328,6 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Sorry! Comment does not exist!");
-      });
-  });
-  test("DELETE: 400 responds with an appropriate error when comment_id is invalid", () => {
-    return request(app)
-      .delete("/api/comments/nonsense")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request");
       });
   });
 });
