@@ -71,6 +71,25 @@ describe("GET: /api/articles", () => {
   });
 });
 
+describe("GET: /api/users", () => {
+  test("GET 200: responds with an array of all users objects with certain properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toHaveLength(data.userData.length);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   test("GET: 200 sends a single article to the client ", () => {
     return request(app)
@@ -266,7 +285,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   test("DELETE: 204 - deletes the given comment by comment_id, responds with 204 status and no content", () => {
     return request(app).delete("/api/comments/1").expect(204);
   });
