@@ -1,4 +1,5 @@
 const format = require("pg-format");
+const db = require("../connection");
 
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
@@ -23,10 +24,11 @@ exports.formatComments = (comments, idLookup) => {
   });
 };
 
-exports.checkExists = async (table, column, value) => {
-  const queryStr = format("SELECT * FROM %I = $1", table, column);
-  const dbOutput = await db.query(queryStr, [value]);
-  if (!dbOutput.rows.length) {
-    return Promise.reject({ status: 404, msg: `${value} not found` });
-  }
+exports.checkExists = (table, column, value) => {
+  const queryStr = format("SELECT * FROM %I WHERE %I = $1;", table, column);
+  return db.query(queryStr, [value]).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({ status: 404, msg: `${value} not found` });
+    }
+  });
 };

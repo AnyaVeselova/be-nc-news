@@ -71,17 +71,15 @@ describe("GET: /api/articles", () => {
   });
 });
 
-describe("GET: /api/articles?topic=<name>", () => {
+describe("GET: /api/articles?topic=mitch", () => {
   test("GET: 200 - filters articles when passed a topic query", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toHaveLength(
-          data.articleData.filter((article) => article.topic === "mitch").length
-        );
-        articles.forEach((article) => {
-          expect(article.topic).toBe(mitch);
+        expect(body.articles).toHaveLength(12);
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
         });
       });
   });
@@ -318,7 +316,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   test("DELETE: 204 - deletes the given comment by comment_id, responds with 204 status and no content", () => {
     return request(app).delete("/api/comments/1").expect(204);
   });

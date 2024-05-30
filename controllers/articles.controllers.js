@@ -3,15 +3,24 @@ const {
   setArticles,
   patchArticleById,
 } = require("../models/articles.models");
+const { checkExists } = require("../db/seeds/utils");
 
-exports.getAllArticles = (req, res, next) => {
-  setArticles()
-    .then((articles) => {
+exports.getArticles = (req, res, next) => {
+  const { topic } = req.query;
+
+  const promises = [setArticles(topic)];
+
+  if (topic) {
+    promises.push(checkExists("topics", "slug", topic));
+  }
+
+  Promise.all(promises)
+    .then((resolvedPromises) => {
+      const articles = resolvedPromises[0];
+
       res.status(200).send({ articles });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.getArticleById = (req, res, next) => {
