@@ -202,7 +202,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("PATCH: 200 should increment the specified article vote with the inc_votes provided", () => {
     const newVotes = { inc_votes: 5 };
 
@@ -266,13 +266,13 @@ describe.only("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe("DELETE /api/comments/:comment_id", () => {
+describe.only("DELETE /api/comments/:comment_id", () => {
   test("DELETE: 204 - deletes the given comment by comment_id, responds with 204 status and no content", () => {
-    return request(app).delete("/api/comments/:comment_id").expect(204);
+    return request(app).delete("/api/comments/1").expect(204);
   });
   test("DELETE: 404 responds with an appropriate error when comment_id is non-existent", () => {
     return request(app)
-      .delete("/api/comments/999")
+      .delete("/api/comments/9999")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Sorry! Comment does not exist!");
