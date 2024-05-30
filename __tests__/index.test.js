@@ -222,10 +222,14 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(201)
       .then(({ body }) => {
         const { comment } = body;
-        expect(comment.author).toBe("butter_bridge");
-        expect(comment.body).toBe(
-          "NC is the best software development bootcamp"
-        );
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "NC is the best software development bootcamp",
+          article_id: expect.any(Number),
+          author: "butter_bridge",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
       });
   });
   test("POST: 400 responds with an appropriate error when provided a bad comment schema", () => {
