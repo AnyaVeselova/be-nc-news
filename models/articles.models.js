@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 
-exports.setArticles = () => {
-  const formatedArticles = `
+exports.setArticles = (topic) => {
+  let formatedArticlesQuery = `
     SELECT 
     articles.article_id,
     articles.title, 
@@ -11,13 +11,36 @@ exports.setArticles = () => {
     articles.votes,
     articles.article_img_url,
     COUNT(comments.comment_id)::int AS comment_count
-    FROM articles
+    FROM articles    
     LEFT JOIN comments ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;
     `;
 
-  return db.query(formatedArticles).then(({ rows }) => {
+  const queryVal = [];
+  if (topic) {
+    formatedArticlesQuery += "WHERE articles.topic = $1 ";
+    queryVal.push(topic);
+  }
+  formatedArticlesQuery +=
+    " GROUP BY articles.article_id ORDER BY articles.created_at DESC";
+
+  return db.query(formatedArticlesQuery, queryVal).then(({ rows }) => {
+    return rows;
+  });
+};
+
+exports.selectArticles = (topic) => {
+  let queryStr = "SELECT * FROM articles";
+
+  const queryVal = [];
+  if (topic) {
+    queryStr += "WHERE topic = $1";
+    queryVal.push(topic);
+  }
+
+  return db.query(queryStr, queryVal).then(({ rows }) => {
+    if (!rows.length) {
+      checkExists("topics", "slug", topic);
+    }
     return rows;
   });
 };

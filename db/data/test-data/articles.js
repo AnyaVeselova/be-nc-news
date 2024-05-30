@@ -117,4 +117,13 @@ module.exports = [
     article_img_url:
       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
   },
+  {
+    title: "Another article about Mitch",
+    topic: "cats",
+    author: "butter_bridge",
+    body: "There will never be enough articles about Mitch!",
+    created_at: 1602419040000,
+    article_img_url:
+      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+  },
 ];

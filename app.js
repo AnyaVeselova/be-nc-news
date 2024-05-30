@@ -2,7 +2,7 @@ const { getTopics } = require("./controllers/topics.controllers");
 const { allEndpoints } = require("./controllers/endpoints.controllers");
 const {
   getArticleById,
-  getAllArticles,
+  getArticles,
   updateArticleVotesById,
 } = require("./controllers/articles.controllers");
 const {
@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/api/topics", getTopics);
-app.get("/api/articles", getAllArticles);
+app.get("/api/articles", getArticles);
 app.get("/api", allEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
@@ -28,7 +28,7 @@ app.delete("/api/comments/:comment_id", deleteCommentById);
 app.get("/api/users", getAllUsers);
 
 app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
+  if (err.code === "22P02" || err.code === "42601") {
     res.status(400).send({ msg: "Bad Request" });
   } else {
     next(err);
@@ -41,6 +41,10 @@ app.use((err, req, res, next) => {
   } else {
     next(err);
   }
+});
+
+app.use((err, req, res, next) => {
+  res.status(500).send({ msg: "Internal Server Error" });
 });
 
 app.all("*", (req, res) => {
