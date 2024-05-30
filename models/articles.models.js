@@ -32,3 +32,12 @@ exports.selectArticleById = (article_id) => {
       return rows[0];
     });
 };
+
+exports.patchArticleById = (article_id, newVotes) => {
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *",
+      [newVotes, article_id]
+    )
+    .then(({ rows }) => rows[0]);
+};

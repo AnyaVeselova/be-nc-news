@@ -202,6 +202,69 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+describe.only("PATCH /api/articles/:article_id", () => {
+  test("PATCH: 200 should increment the specified article vote with the inc_votes provided", () => {
+    const newVotes = { inc_votes: 5 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedArticle } = body;
+
+        expect(updatedArticle.votes).toBe(105);
+      });
+  });
+
+  test("PATCH: 200 should decrement the specified article vote with the inc_votes provided", () => {
+    const newVotes = { inc_votes: -5 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedArticle } = body;
+        expect(updatedArticle.votes).toBe(95);
+      });
+  });
+
+  test("PATCH: 400 responds with an appropriate error when newVotes is not provided", () => {
+    const newVotes = {};
+
+    return request(app)
+      .patch("/api/articles/NaN")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH: 400 responds with an appropriate error when article_id is an invalid type ", () => {
+    const newVotes = { inc_votes: -5 };
+
+    return request(app)
+      .patch("/api/articles/NaN")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+
+  test("PATCH: 404 - responds with an appropriate error when article_id is non-existent", () => {
+    const newVotes = { inc_votes: -5 };
+
+    return request(app)
+      .patch("/api/articles/999")
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article was not found");
+      });
+  });
+});
 describe("Generic errors", () => {
   test("GET: 404 responds with not found error when endpoint does not exist  ", () => {
     return request(app)
