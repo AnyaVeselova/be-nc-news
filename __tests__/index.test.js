@@ -265,6 +265,28 @@ describe.only("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE: 204 - deletes the given comment by comment_id, responds with 204 status and no content", () => {
+    return request(app).delete("/api/comments/:comment_id").expect(204);
+  });
+  test("DELETE: 404 responds with an appropriate error when comment_id is non-existent", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Sorry! Comment does not exist!");
+      });
+  });
+  test("DELETE: 400 responds with an appropriate error when comment_id is invalid", () => {
+    return request(app)
+      .delete("/api/comments/nonsense")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+});
 describe("Generic errors", () => {
   test("GET: 404 responds with not found error when endpoint does not exist  ", () => {
     return request(app)
