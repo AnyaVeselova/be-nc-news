@@ -83,6 +83,7 @@ describe("GET: /api/articles?topic=mitch", () => {
         });
       });
   });
+
   test("GET: 200 - should return an empty array when topic exists but there aren't any articles", () => {
     return request(app)
       .get("/api/articles?topic=paper")

@@ -28,23 +28,6 @@ exports.setArticles = (topic) => {
   });
 };
 
-exports.selectArticles = (topic) => {
-  let queryStr = "SELECT * FROM articles";
-
-  const queryVal = [];
-  if (topic) {
-    queryStr += "WHERE topic = $1";
-    queryVal.push(topic);
-  }
-
-  return db.query(queryStr, queryVal).then(({ rows }) => {
-    if (!rows.length) {
-      checkExists("topics", "slug", topic);
-    }
-    return rows;
-  });
-};
-
 exports.selectArticleById = (article_id) => {
   return db
     .query("SELECT * FROM articles WHERE article_id = $1 ", [article_id])
