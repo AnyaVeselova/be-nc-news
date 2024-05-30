@@ -232,6 +232,30 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
+
+  test("POST: 201 ignores any extra properties that are sent", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "NC is the best software development bootcamp",
+      extraprop: "should be ignored",
+    };
+
+    return request(app)
+      .post("/api/articles/11/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "NC is the best software development bootcamp",
+          article_id: expect.any(Number),
+          author: "butter_bridge",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
   test("POST: 400 responds with an appropriate error when provided a bad comment schema", () => {
     return request(app)
       .post("/api/articles/11/comments")
