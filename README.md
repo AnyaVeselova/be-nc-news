@@ -58,8 +58,8 @@ To set up the databases, run:
 Create two .env files for database connections:
 
 ```
-.env.test: PGDATABASE=nc_news_test
-.env.development: PGDATABASE=nc_news
+.env.test: ***PGDATABASE=nc_news_test***
+.env.development: ***PGDATABASE=nc_news***
 Ensure these files are listed in .gitignore.
 ```
 
@@ -68,7 +68,7 @@ After setting up, you can query the test database:
 ```
 $ psql
 \c nc_news_test
-nc_news_test=# SELECT \* FROM articles;
+nc_news_test=# SELECT * FROM articles;
 To exit, type \q.
 ```
 
