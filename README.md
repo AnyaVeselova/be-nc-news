@@ -58,8 +58,8 @@ To set up the databases, run:
 Create two .env files for database connections:
 
 ```
-`.env.test: PGDATABASE=nc_news_test`
-`.env.development: PGDATABASE=nc_news`
+.env.test: PGDATABASE=nc_news_test
+.env.development: PGDATABASE=nc_news
 Ensure these files are listed in .gitignore.
 ```
 
