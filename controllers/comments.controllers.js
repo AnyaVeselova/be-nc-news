@@ -5,6 +5,7 @@ const {
   removeCommentById,
 } = require("../models/comments.models");
 const { selectArticleById } = require("../models/articles.models.js");
+const { checkExists } = require("../db/seeds/utils");
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
@@ -23,25 +24,28 @@ exports.postComment = (req, res, next) => {
   const { username, body } = req.body;
   const { article_id } = req.params;
 
-  if (!username || !body) {
-    return res.status(400).send({ msg: "Bad Request" });
-  }
+  const promises = [
+    selectArticleById(article_id),
+    checkExists("users", "username", username),
+  ];
 
-  setComment(article_id, username, body)
+  Promise.all(promises)
+    .then(() => {
+      return setComment(article_id, username, body);
+    })
     .then((comment) => {
       res.status(201).send({ comment });
     })
+
     .catch(next);
 };
 
 exports.deleteCommentById = (req, res, next) => {
   const { comment_id } = req.params;
 
-  selectCommentById(comment_id)
-    .then((comment) => {
-      removeCommentById(comment).then(() => {
-        res.status(204).send();
-      });
+  removeCommentById(comment_id)
+    .then(() => {
+      res.status(204).end();
     })
 
     .catch(next);
