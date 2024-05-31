@@ -26,8 +26,8 @@ Ensure the following dependencies are installed globally on your machine:
 
 Fork the project to your GitHub profile, then clone the repository. In your terminal, navigate to the desired directory and run:
 
-\*\*```bash
-$ git clone https://github.com/<your-github-username>/be-nc-news
+\*\*```
+git clone https://github.com/<your-github-username>/be-nc-news
 
 ````**
 
@@ -67,7 +67,7 @@ Ensure these files are listed in `.gitignore`.
 
 After setting up, you can query the test database:
 
-**```bash
+**```
 $ psql
 \c nc_news_test
 nc_news_test=# SELECT * FROM articles;
@@ -78,7 +78,7 @@ To exit, type **`\q`**.
 ## Exploring and Testing
 Feel free to explore the repository and make changes. To run the full test suite, use:
 
-**```bash
+**```
 $ npm test
 ```**
 
