@@ -26,69 +26,65 @@ Ensure the following dependencies are installed globally on your machine:
 
 Fork the project to your GitHub profile, then clone the repository. In your terminal, navigate to the desired directory and run:
 
-`````
-git clone https://github.com/<your-github-username>/be-nc-news
-
-````**
+```
+ git clone https://github.com/<your-github-username>/be-nc-news
+```
 
 Navigate to the project directory and install all dependencies:
 
-**```bash
-$ npm install
-```**
+```
+ npm install
+```
 
 This will install the following dependencies:
 
-- express
-- cors
-- jest
-- jest-extended
-- jest-sorted
-- supertest
-- dotenv
-- pg
-- pg-format
-- husky
-
-## Database Setup
+express
+cors
+jest
+jest-extended
+jest-sorted
+supertest
+dotenv
+pg
+pg-format
+Database Setup
 To set up the databases, run:
 
-**```bash
-$ npm run setup-dbs
-$ npm run seed
-```**
+```
+ npm run setup-dbs
+ npm run seed
+```
 
-Create two `.env` files for database connections:
+Create two .env files for database connections:
 
-- `.env.test`: **`PGDATABASE=nc_news_test`**
-- `.env.development`: **`PGDATABASE=nc_news`**
-
-Ensure these files are listed in `.gitignore`.
+```
+.env.test: PGDATABASE=nc_news_test
+.env.development: PGDATABASE=nc_news
+Ensure these files are listed in .gitignore.
+```
 
 After setting up, you can query the test database:
 
-**```
+```
 $ psql
 \c nc_news_test
 nc_news_test=# SELECT * FROM articles;
-```**
-
-To exit, type **`\q`**.
+To exit, type \q.
+```
 
 ## Exploring and Testing
+
 Feel free to explore the repository and make changes. To run the full test suite, use:
 
-**```
-$ npm test
-```**
+```
+ npm test
+```
 
 Thank you, and enjoy working with the repository!
 
 ---
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
-
-`````
 
 ```
 
