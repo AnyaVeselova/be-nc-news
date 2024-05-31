@@ -28,8 +28,10 @@ app.delete("/api/comments/:comment_id", deleteCommentById);
 app.get("/api/users", getAllUsers);
 
 app.use((err, req, res, next) => {
-  if (err.code === "22P02" || err.code === "42601") {
+  if (err.code === "22P02") {
     res.status(400).send({ msg: "Bad Request" });
+  } else if (err.code === "23502") {
+    res.status(400).send({ msg: "Required key missing" });
   } else {
     next(err);
   }
@@ -44,6 +46,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 });
 

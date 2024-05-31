@@ -222,10 +222,39 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(201)
       .then(({ body }) => {
         const { comment } = body;
-        expect(comment.author).toBe("butter_bridge");
-        expect(comment.body).toBe(
-          "NC is the best software development bootcamp"
-        );
+
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "NC is the best software development bootcamp",
+          article_id: expect.any(Number),
+          author: "butter_bridge",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+
+  test("POST: 201 ignores any extra properties that are sent", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "NC is the best software development bootcamp",
+      extraprop: "should be ignored",
+    };
+
+    return request(app)
+      .post("/api/articles/11/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: "NC is the best software development bootcamp",
+          article_id: expect.any(Number),
+          author: "butter_bridge",
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        });
       });
   });
   test("POST: 400 responds with an appropriate error when provided a bad comment schema", () => {
@@ -234,7 +263,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "butter_bridge" })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request");
+        expect(body.msg).toBe("Required key missing");
       });
   });
 
@@ -249,6 +278,33 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");
+      });
+  });
+
+  test("POST: 404 responds with an appropriate error when article is valid but doesn't exist", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "NC is the best software development bootcamp",
+    };
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article was not found");
+      });
+  });
+  test("POST: 404 responds with an appropriate error when username doesn't exist", () => {
+    const newComment = {
+      username: "Anya",
+      body: "NC is the best software development bootcamp",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Anya not found");
       });
   });
 });
