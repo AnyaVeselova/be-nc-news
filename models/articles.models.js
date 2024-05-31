@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 
-exports.setArticles = (topic) => {
+exports.setArticles = (topic, sort_by = "created_at", order = "desc") => {
   let formatedArticlesQuery = `
     SELECT 
     articles.article_id,
@@ -10,20 +10,42 @@ exports.setArticles = (topic) => {
     articles.created_at,
     articles.votes,
     articles.article_img_url,
-    COUNT(comments.comment_id)::int AS comment_count
+    COUNT(comments.article_id)::int AS comment_count
     FROM articles    
     LEFT JOIN comments ON comments.article_id = articles.article_id
     `;
 
-  const queryVal = [];
+  const topicQuery = [];
+  const sortQueries = [
+    "votes",
+    "comment_count",
+    "article_id",
+    "author",
+    "title",
+    "topic",
+    "created_at",
+  ];
+  const orderQueries = ["desc", "asc"];
+
   if (topic) {
     formatedArticlesQuery += "WHERE articles.topic = $1 ";
-    queryVal.push(topic);
+    topicQuery.push(topic);
   }
-  formatedArticlesQuery +=
-    " GROUP BY articles.article_id ORDER BY articles.created_at DESC";
+  formatedArticlesQuery += " GROUP BY articles.article_id ";
 
-  return db.query(formatedArticlesQuery, queryVal).then(({ rows }) => {
+  if (sortQueries.includes(sort_by)) {
+    formatedArticlesQuery += `ORDER BY ${sort_by}`;
+  } else {
+    return Promise.reject({ status: 400, msg: "Invalid sort_by" });
+  }
+
+  if (orderQueries.includes(order)) {
+    formatedArticlesQuery += ` ${order}`;
+  } else {
+    return Promise.reject({ status: 400, msg: "Invalid order query" });
+  }
+
+  return db.query(formatedArticlesQuery, topicQuery).then(({ rows }) => {
     return rows;
   });
 };

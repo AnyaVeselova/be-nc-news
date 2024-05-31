@@ -6,9 +6,9 @@ const {
 const { checkExists } = require("../db/seeds/utils");
 
 exports.getArticles = (req, res, next) => {
-  const { topic } = req.query;
+  const { topic, sort_by, order } = req.query;
 
-  const promises = [setArticles(topic)];
+  const promises = [setArticles(topic, sort_by, order)];
 
   if (topic) {
     promises.push(checkExists("topics", "slug", topic));
