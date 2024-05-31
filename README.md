@@ -8,7 +8,7 @@ To explore the hosted version of the API, visit:
 
 [NC-News API](https://nc-news-x69l.onrender.com/api)
 
-Note that the initial message will be `{"msg":"path not found"}` because the base path is invalid. To access the API, append `/api` to the URL, which will return a JSON object listing all available endpoints and their descriptions.
+The above API will return a JSON object listing all available endpoints and their descriptions.
 
 For local development and testing, follow the instructions below.
 
@@ -43,14 +43,12 @@ supertest
 dotenv
 pg
 pg-format
-husky
 Database Setup
 To set up the databases, run:
 
-bash
-Copy code
 $ npm run setup-dbs
 $ npm run seed
+
 Create two .env files for database connections:
 
 .env.test: PGDATABASE=nc_news_test
@@ -67,8 +65,6 @@ To exit, type \q.
 Exploring and Testing
 Feel free to explore the repository and make changes. To run the full test suite, use:
 
-bash
-Copy code
 $ npm test
 Thank you, and enjoy working with the repository!
 
