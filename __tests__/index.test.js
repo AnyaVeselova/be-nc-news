@@ -140,6 +140,21 @@ describe("GET /api/articles/:article_id", () => {
         );
       });
   });
+  test("GET: 200 - send the correct value of comment_count", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          if (article.article_id === 1) {
+            expect(article.comment_count).toBe(11);
+          } else if (article.article_id === 3) {
+            expect(article.comment_count).toBe(2);
+          }
+        });
+      });
+  });
   test("GET: 404 sends an appropriate status and error message when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/999")
