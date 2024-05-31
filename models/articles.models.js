@@ -45,8 +45,6 @@ exports.setArticles = (topic, sort_by = "created_at", order = "desc") => {
     return Promise.reject({ status: 400, msg: "Invalid order query" });
   }
 
-  console.log(formatedArticlesQuery);
-
   return db.query(formatedArticlesQuery, topicQuery).then(({ rows }) => {
     return rows;
   });
