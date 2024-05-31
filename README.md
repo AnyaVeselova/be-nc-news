@@ -26,7 +26,7 @@ Ensure the following dependencies are installed globally on your machine:
 
 Fork the project to your GitHub profile, then clone the repository. In your terminal, navigate to the desired directory and run:
 
-\*\*```
+`````
 git clone https://github.com/<your-github-username>/be-nc-news
 
 ````**
@@ -88,7 +88,7 @@ Thank you, and enjoy working with the repository!
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
 
-````
+`````
 
 ```
 
