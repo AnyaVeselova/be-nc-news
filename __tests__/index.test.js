@@ -274,6 +274,29 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
+describe("GET /api/users/:username", () => {
+  test("GET: 200 - returns a user object by username", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user.username).toBe("rogersop");
+        expect(body.user.avatar_url).toBe(
+          "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        );
+        expect(body.user.name).toBe("paul");
+      });
+  });
+  test("GET: 404 sends an appropriate status and error message when given a valid but non-existent username", () => {
+    return request(app)
+      .get("/api/users/anya")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("user was not found");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("GET: 200 sends an array of comments to the client with the most recent comments first", () => {
     return request(app)
