@@ -223,6 +223,29 @@ describe("GET: /api/users", () => {
   });
 });
 
+describe("GET /api/users/:username", () => {
+  test("GET: 200 - returns a user object by username", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user.username).toBe("rogersop");
+        expect(body.user.avatar_url).toBe(
+          "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        );
+        expect(body.user.name).toBe("paul");
+      });
+  });
+  test("GET: 404 sends an appropriate status and error message when given a valid but non-existent username", () => {
+    return request(app)
+      .get("/api/users/anya")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("user was not found");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   test("GET: 200 sends a single article to the client ", () => {
     return request(app)
@@ -270,29 +293,6 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");
-      });
-  });
-});
-
-describe("GET /api/users/:username", () => {
-  test("GET: 200 - returns a user object by username", () => {
-    return request(app)
-      .get("/api/users/rogersop")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.user.username).toBe("rogersop");
-        expect(body.user.avatar_url).toBe(
-          "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
-        );
-        expect(body.user.name).toBe("paul");
-      });
-  });
-  test("GET: 404 sends an appropriate status and error message when given a valid but non-existent username", () => {
-    return request(app)
-      .get("/api/users/anya")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("user was not found");
       });
   });
 });
@@ -450,11 +450,11 @@ describe("POST /api/articles/:article_id/comments", () => {
 
 describe("PATCH /api/articles/:article_id", () => {
   test("PATCH: 200 should increment the specified article vote with the inc_votes provided", () => {
-    const newVotes = { inc_votes: 5 };
+    const newVote = { inc_votes: 5 };
 
     return request(app)
       .patch("/api/articles/1")
-      .send(newVotes)
+      .send(newVote)
       .expect(200)
       .then(({ body }) => {
         const { updatedArticle } = body;
@@ -464,11 +464,11 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 
   test("PATCH: 200 should decrement the specified article vote with the inc_votes provided", () => {
-    const newVotes = { inc_votes: -5 };
+    const newVote = { inc_votes: -5 };
 
     return request(app)
       .patch("/api/articles/1")
-      .send(newVotes)
+      .send(newVote)
       .expect(200)
       .then(({ body }) => {
         const { updatedArticle } = body;
@@ -476,23 +476,23 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 
-  test("PATCH: 400 responds with an appropriate error when newVotes is not provided", () => {
-    const newVotes = {};
+  test("PATCH: 400 responds with an appropriate error when newVote is not provided", () => {
+    const newVote = {};
 
     return request(app)
       .patch("/api/articles/NaN")
-      .send(newVotes)
+      .send(newVote)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");
       });
   });
   test("PATCH: 400 responds with an appropriate error when article_id is an invalid type ", () => {
-    const newVotes = { inc_votes: -5 };
+    const newVote = { inc_votes: -5 };
 
     return request(app)
       .patch("/api/articles/NaN")
-      .send(newVotes)
+      .send(newVote)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");
@@ -500,14 +500,77 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 
   test("PATCH: 404 - responds with an appropriate error when article_id is non-existent", () => {
-    const newVotes = { inc_votes: -5 };
+    const newVote = { inc_votes: -5 };
 
     return request(app)
       .patch("/api/articles/999")
-      .send(newVotes)
+      .send(newVote)
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("article was not found");
+      });
+  });
+});
+
+describe("PATCH /api/comments/comment_id", () => {
+  test("PATCH: 200 should increment the specified comment vote with the inc_votes provided", () => {
+    const newVote = { inc_votes: 5 };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedComment } = body;
+        expect(updatedComment.votes).toBe(21);
+      });
+  });
+
+  test("PATCH: 200 should decrement the specified comment vote with the inc_votes provided", () => {
+    const newVote = { inc_votes: -5 };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { updatedComment } = body;
+        expect(updatedComment.votes).toBe(11);
+      });
+  });
+
+  test("PATCH: 400 responds with an appropriate error when newVote is not provided", () => {
+    const newVote = {};
+
+    return request(app)
+      .patch("/api/comments/NaN")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH: 400 responds with an appropriate error when comment_id is an invalid type ", () => {
+    const newVote = { inc_votes: -5 };
+
+    return request(app)
+      .patch("/api/comments/NaN")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+
+  test("PATCH: 404 - responds with an appropriate error when comment_id is non-existent", () => {
+    const newVote = { inc_votes: -5 };
+
+    return request(app)
+      .patch("/api/comments/999")
+      .send(newVote)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment was not found");
       });
   });
 });

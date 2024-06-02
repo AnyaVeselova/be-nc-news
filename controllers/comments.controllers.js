@@ -2,6 +2,7 @@ const {
   selectCommentsByArticleId,
   setComment,
   selectCommentById,
+  patchCommentById,
   removeCommentById,
 } = require("../models/comments.models");
 const { selectArticleById } = require("../models/articles.models.js");
@@ -37,6 +38,22 @@ exports.postComment = (req, res, next) => {
       res.status(201).send({ comment });
     })
 
+    .catch(next);
+};
+
+exports.updateCommentVotesByCommentId = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+
+  const promises = [
+    selectCommentById(comment_id),
+    patchCommentById(comment_id, inc_votes),
+  ];
+  Promise.all(promises)
+    .then((resolvedPromises) => {
+      const updatedComment = resolvedPromises[1];
+      res.status(200).send({ updatedComment });
+    })
     .catch(next);
 };
 
