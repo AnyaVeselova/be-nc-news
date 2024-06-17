@@ -4,6 +4,7 @@ const db = require("../db/connection");
 const app = require("../app");
 const request = require("supertest");
 const endpointsJSON = require("../endpoints.json");
+const { values } = require("../db/data/test-data/articles");
 require("jest-sorted");
 
 beforeEach(() => {
@@ -344,6 +345,149 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("POST /api/articles", () => {
+  test("POST: 201 adds a new article to articles array with added properties", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "NC bootcamp",
+      body: "This is a new article with more properties added.",
+      topic: "mitch",
+      article_img_url:
+        "https://unsplash.com/photos/white-and-blue-cloudy-sky-f5_lfi2S-d4",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "NC bootcamp",
+          body: "This is a new article with more properties added.",
+          topic: "mitch",
+          article_img_url:
+            "https://unsplash.com/photos/white-and-blue-cloudy-sky-f5_lfi2S-d4",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+
+  test("POST: 201 ignores any extra properties that are sent", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "NC bootcamp",
+      body: "This is a new article with more properties added.",
+      topic: "mitch",
+      article_img_url:
+        "https://unsplash.com/photos/white-and-blue-cloudy-sky-f5_lfi2S-d4",
+      extra: "extra property",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "NC bootcamp",
+          body: "This is a new article with more properties added.",
+          topic: "mitch",
+          article_img_url:
+            "https://unsplash.com/photos/white-and-blue-cloudy-sky-f5_lfi2S-d4",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+
+  test("POST: 201 should set img_url to default image if body doesn't have an image", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "NC bootcamp",
+      body: "This is a new article with more properties added.",
+      topic: "mitch",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "NC bootcamp",
+          body: "This is a new article with more properties added.",
+          topic: "mitch",
+          article_img_url:
+            "https://unsplash.com/photos/bundle-of-newspaper-on-table-Mwuod2cm8g4",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+
+  // test("POST: 400 responds with an appropriate error when provided a bad article schema", () => {
+  //   return request(app)
+  //     .post("/api/articles")
+  //     .send({ author: "butter_bridge" })
+  //     .expect(400)
+  //     .then(({ body }) => {
+  //       expect(body.msg).toBe("Required key missing");
+  //     });
+  // });
+
+  test('"POST: 404 - api/articles should return an appropriate error code with a message if provided an author that does not exist in users', () => {
+    const newArticle = {
+      author: "Anya",
+      title: "NC bootcamp",
+      body: "This is a new article with more properties added.",
+      topic: "mitch",
+      article_img_url:
+        "https://unsplash.com/photos/white-and-blue-cloudy-sky-f5_lfi2S-d4",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Anya not found");
+      });
+  });
+
+  test('"POST: 404 - api/articles should return an appropriate error code with a message if provided a topic that does not exist in topics', () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "NC bootcamp",
+      body: "This is a new article with more properties added.",
+      topic: "Employment",
+      article_img_url:
+        "https://unsplash.com/photos/white-and-blue-cloudy-sky-f5_lfi2S-d4",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Employment not found");
       });
   });
 });

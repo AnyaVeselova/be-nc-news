@@ -2,6 +2,7 @@ const {
   selectArticleById,
   setArticles,
   patchArticleById,
+  insertArticle,
 } = require("../models/articles.models");
 const { checkExists } = require("../db/seeds/utils");
 
@@ -44,6 +45,22 @@ exports.updateArticleVotesById = (req, res, next) => {
     .then((resolvedPromises) => {
       const updatedArticle = resolvedPromises[1];
       res.status(200).send({ updatedArticle });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  const article = req.body;
+
+  Promise.all([
+    checkExists("topics", "slug", article.topic),
+    checkExists("users", "username", article.author),
+  ])
+    .then(() => {
+      return insertArticle(article);
+    })
+    .then((insertedArticle) => {
+      res.status(201).send({ article: insertedArticle[0] });
     })
     .catch(next);
 };
