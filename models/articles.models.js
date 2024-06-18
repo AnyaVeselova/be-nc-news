@@ -52,14 +52,28 @@ exports.setArticles = (topic, sort_by = "created_at", order = "desc") => {
 };
 
 exports.selectArticleById = (article_id) => {
-  return db
-    .query("SELECT * FROM articles WHERE article_id = $1 ", [article_id])
-    .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "article was not found" });
-      }
-      return rows[0];
-    });
+  let formatedArticleQuery = `
+    SELECT 
+    articles.article_id,
+    articles.title, 
+    articles.author,
+    articles.topic, 
+    articles.created_at,
+    articles.votes,
+    articles.article_img_url,
+    articles.body,
+    COUNT(comments.article_id)::int AS comment_count
+    FROM articles    
+    LEFT JOIN comments ON comments.article_id = articles.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id
+    `;
+  return db.query(formatedArticleQuery, [article_id]).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({ status: 404, msg: "article was not found" });
+    }
+    return rows[0];
+  });
 };
 
 exports.patchArticleById = (article_id, newVotes) => {
