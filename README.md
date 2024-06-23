@@ -27,7 +27,7 @@ Ensure the following dependencies are installed globally on your machine:
 Fork the project to your GitHub profile, then clone the repository. In your terminal, navigate to the desired directory and run:
 
 ```
- git clone https://github.com/<your-github-username>/be-nc-news
+ git clone https://github.com/AnyaVeselova/be-nc-news
 ```
 
 Navigate to the project directory and install all dependencies:
