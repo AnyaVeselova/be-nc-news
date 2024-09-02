@@ -52,7 +52,7 @@ describe("GET: /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toHaveLength(data.articleData.length);
+        expect(articles).toHaveLength(10);
 
         articles.forEach((article) => {
           expect(article).toMatchObject({
@@ -72,6 +72,124 @@ describe("GET: /api/articles", () => {
   });
 });
 
+describe("pagination limit and p queries", () => {
+  it("returns status code 200 a limited amount of article objects defaults to 10", () => {
+    return request(app)
+      .get("/api/articles?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(10);
+      });
+  });
+  it("returns status code 200 a limited amount of article objects if the limit is > 10 it uses that value", () => {
+    return request(app)
+      .get("/api/articles?limit=13")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(13);
+      });
+  });
+  it("returns status code 200 a limited amount of article objects, if p = 2 it will return the second page of articles up to the limit ", () => {
+    return request(app)
+      .get("/api/articles?limit=10&&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(4);
+      });
+  });
+  it("returns status code 200 a limited amount of article objects, if p = 2 it will return the second page of articles up to the limit ", () => {
+    return request(app)
+      .get("/api/articles?limit=10&&p=3")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(0);
+      });
+  });
+  it("returns status code 200 a limited amount of article objects, if p = 3 it will return the second page of articles up to the limit ", () => {
+    return request(app)
+      .get("/api/articles?limit=10&&p=3")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(0);
+      });
+  });
+  it("returns status code 400 and the msg 'Invalid Input' if limit is not a number", () => {
+    return request(app)
+      .get("/api/articles?limit=invalid&&p=3")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid Input");
+      });
+  });
+  it("returns status code 400 and the msg 'Invalid Input' if p is not a number", () => {
+    return request(app)
+      .get("/api/articles?limit=5&&p=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid Input");
+      });
+  });
+  it("returns status code 200 and the first 10 articles if p or limit are negative' if p is not a number", () => {
+    return request(app)
+      .get("/api/articles?limit=-5&&p=-3")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(10);
+      });
+  });
+  it("returns status code 200 and requested articles if used with topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&&limit=10&&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(2);
+      });
+  });
+  it("returns status code 200 and requested articles if used with order query", () => {
+    return request(app)
+      .get("/api/articles?order=asc&&limit=10&&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(10);
+      });
+  });
+});
+
+describe.only("total_count", () => {
+  it("returns status code 200 and the total count of results for a request", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article.total_count).toBe(14);
+        });
+      });
+  });
+  it("returns the total count of results for a request or query, before any limits are applied", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article.total_count).toBe(12);
+        });
+      });
+  });
+});
+
 describe("GET /api/articles/  sorting queries ", () => {
   test("GET 200:  should sort articles by created_at property in descending order", () => {
     return request(app)
@@ -79,6 +197,7 @@ describe("GET /api/articles/  sorting queries ", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
+
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
@@ -179,7 +298,7 @@ describe("GET: /api/articles?topic=mitch", () => {
       .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toHaveLength(12);
+        expect(body.articles).toHaveLength(10);
         body.articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
         });

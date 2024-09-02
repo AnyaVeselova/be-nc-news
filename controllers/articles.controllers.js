@@ -7,9 +7,9 @@ const {
 const { checkExists } = require("../db/seeds/utils");
 
 exports.getArticles = (req, res, next) => {
-  const { topic, sort_by, order } = req.query;
+  const { topic, sort_by, order, limit, p } = req.query;
 
-  const promises = [setArticles(topic, sort_by, order)];
+  const promises = [setArticles(topic, sort_by, order, limit, p)];
 
   if (topic) {
     promises.push(checkExists("topics", "slug", topic));
@@ -18,8 +18,9 @@ exports.getArticles = (req, res, next) => {
   Promise.all(promises)
     .then((resolvedPromises) => {
       const articles = resolvedPromises[0];
+      const length = articles.length;
 
-      res.status(200).send({ articles });
+      res.status(200).send({ articles: articles });
     })
     .catch(next);
 };

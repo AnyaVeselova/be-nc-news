@@ -1,7 +1,13 @@
 const db = require("../db/connection");
 const { convertTimestampToDate } = require("../db/seeds/utils");
 
-exports.setArticles = (topic, sort_by = "created_at", order = "desc") => {
+exports.setArticles = (
+  topic,
+  sort_by = "created_at",
+  order = "desc",
+  limit = 10,
+  p = 1
+) => {
   let formatedArticlesQuery = `
     SELECT 
     articles.article_id,
@@ -11,7 +17,8 @@ exports.setArticles = (topic, sort_by = "created_at", order = "desc") => {
     articles.created_at,
     articles.votes,
     articles.article_img_url,
-    COUNT(comments.article_id)::int AS comment_count
+    COUNT(comments.article_id)::int AS comment_count,
+    COUNT(*) OVER()::INT AS total_count
     FROM articles    
     LEFT JOIN comments ON comments.article_id = articles.article_id
     `;
@@ -44,6 +51,22 @@ exports.setArticles = (topic, sort_by = "created_at", order = "desc") => {
     formatedArticlesQuery += ` ${order}`;
   } else {
     return Promise.reject({ status: 400, msg: "Invalid order query" });
+  }
+
+  if (limit || p) {
+    let offset = 0;
+    if (!p || p < 0) p = 0;
+    if (isNaN(Number(limit)) || isNaN(Number(p))) {
+      return Promise.reject({
+        status: 400,
+        msg: "Invalid Input",
+      });
+    }
+
+    if (limit < 10) limit = 10;
+    if (p) offset = (p - 1) * limit;
+
+    formatedArticlesQuery += ` OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY;`;
   }
 
   return db.query(formatedArticlesQuery, topicQuery).then(({ rows }) => {
