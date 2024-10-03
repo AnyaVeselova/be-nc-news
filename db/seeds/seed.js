@@ -5,8 +5,19 @@ const {
   createRef,
   formatComments,
 } = require("./utils");
+const bcrypt = require("bcryptjs");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
+  const hashPassword = async (userData) => {
+    const saltRounds = 10;
+    const hashedUserData = await Promise.all(
+      userData.map(async (user) => {
+        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+        return { ...user, password: hashedPassword };
+      })
+    );
+    return hashedUserData;
+  };
   return db
     .query(`DROP TABLE IF EXISTS comments;`)
     .then(() => {
@@ -29,7 +40,8 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       CREATE TABLE users (
         username VARCHAR PRIMARY KEY,
         name VARCHAR NOT NULL,
-        avatar_url VARCHAR
+        avatar_url VARCHAR,
+         password VARCHAR NOT NULL
       );`);
 
       return Promise.all([topicsTablePromise, usersTablePromise]);
@@ -65,17 +77,19 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       );
       const topicsPromise = db.query(insertTopicsQueryStr);
 
-      const insertUsersQueryStr = format(
-        "INSERT INTO users ( username, name, avatar_url) VALUES %L;",
-        userData.map(({ username, name, avatar_url }) => [
-          username,
-          name,
-          avatar_url,
-        ])
-      );
-      const usersPromise = db.query(insertUsersQueryStr);
-
-      return Promise.all([topicsPromise, usersPromise]);
+      return hashPassword(userData).then((hashedUserData) => {
+        const insertUsersQueryStr = format(
+          "INSERT INTO users (username, name, avatar_url, password) VALUES %L;",
+          hashedUserData.map(({ username, name, avatar_url, password }) => [
+            username,
+            name,
+            avatar_url,
+            password,
+          ])
+        );
+        const usersPromise = db.query(insertUsersQueryStr);
+        return Promise.all([topicsPromise, usersPromise]);
+      });
     })
     .then(() => {
       const formattedArticleData = articleData.map(convertTimestampToDate);

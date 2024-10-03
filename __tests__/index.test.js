@@ -165,7 +165,7 @@ describe("pagination limit and p queries", () => {
   });
 });
 
-describe.only("total_count", () => {
+describe("total_count", () => {
   it("returns status code 200 and the total count of results for a request", () => {
     return request(app)
       .get("/api/articles")
