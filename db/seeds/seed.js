@@ -4,20 +4,10 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
+  hashPassword,
 } = require("./utils");
-const bcrypt = require("bcryptjs");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
-  const hashPassword = async (userData) => {
-    const saltRounds = 10;
-    const hashedUserData = await Promise.all(
-      userData.map(async (user) => {
-        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-        return { ...user, password: hashedPassword };
-      })
-    );
-    return hashedUserData;
-  };
   return db
     .query(`DROP TABLE IF EXISTS comments;`)
     .then(() => {

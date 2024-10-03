@@ -1,5 +1,6 @@
 const format = require("pg-format");
 const db = require("../connection");
+const bcrypt = require("bcryptjs");
 
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
@@ -31,4 +32,15 @@ exports.checkExists = (table, column, value) => {
       return Promise.reject({ status: 404, msg: `${value} not found` });
     }
   });
+};
+
+exports.hashPassword = async (userData) => {
+  const saltRounds = 10;
+  const hashedUserData = await Promise.all(
+    userData.map(async (user) => {
+      const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+      return { ...user, password: hashedPassword };
+    })
+  );
+  return hashedUserData;
 };
