@@ -1,4 +1,9 @@
-const { setAllUsers, selectUserByUsername } = require("../models/users.models");
+const {
+  setAllUsers,
+  selectUserByUsername,
+
+  verifyUser,
+} = require("../models/users.models");
 
 exports.getAllUsers = (req, res, next) => {
   setAllUsers()
@@ -13,6 +18,15 @@ exports.getUserByUsername = (req, res, next) => {
   selectUserByUsername(username)
     .then((user) => {
       res.status(200).send({ user });
+    })
+    .catch(next);
+};
+
+exports.loginUser = (req, res, next) => {
+  const { username, password } = req.body;
+  verifyUser(username, password)
+    .then((user, token) => {
+      res.status(200).send({ user, token });
     })
     .catch(next);
 };
