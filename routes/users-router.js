@@ -8,5 +8,5 @@ const {
 
 usersRouter.get("/", getAllUsers);
 usersRouter.get("/:username", getUserByUsername);
-usersRouter.post("/:login", loginUser);
+usersRouter.post("/login", loginUser);
 module.exports = usersRouter;
