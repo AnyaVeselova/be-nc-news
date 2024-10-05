@@ -36,7 +36,10 @@ exports.createUser = (req, res, next) => {
       const token = generateToken(user);
       res.status(201).send({ user, token });
     })
-    .catch(next);
+    .catch((error) => {
+      console.error("Error during user creation:", error);
+      next(error);
+    });
 };
 
 exports.loginUser = (req, res, next) => {
