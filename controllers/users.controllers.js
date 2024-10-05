@@ -29,16 +29,14 @@ exports.createUser = (req, res, next) => {
   const userData = { username, name, avatar_url, password };
   hashedPassword(userData)
     .then((hashedUser) => {
-      return addUser(hashedUser);
+      const { username, name, avatar_url, password } = hashedUser;
+      return addUser(username, name, avatar_url, password);
     })
     .then((user) => {
       const token = generateToken(user);
       res.status(201).send({ user, token });
     })
-    .catch((error) => {
-      console.log(error);
-      return Promise.reject(error.response.data);
-    });
+    .catch(next);
 };
 
 exports.loginUser = (req, res, next) => {

@@ -27,7 +27,7 @@ exports.selectUserByUsername = (username) => {
 exports.addUser = (username, name, avatar_url, password) => {
   return db
     .query(
-      "INSERT INTO users (username, name, avatar_url, password) VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO users (username, name, avatar_url, password) VALUES ($1, $2, $3, $4) RETURNING *",
       [username, name, avatar_url, password]
     )
     .then(({ rows }) => {
