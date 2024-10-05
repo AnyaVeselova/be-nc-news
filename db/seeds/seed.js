@@ -4,7 +4,6 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
-  hashPassword,
 } = require("./utils");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
@@ -67,19 +66,17 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       );
       const topicsPromise = db.query(insertTopicsQueryStr);
 
-      return hashPassword(userData).then((hashedUserData) => {
-        const insertUsersQueryStr = format(
-          "INSERT INTO users (username, name, avatar_url, password) VALUES %L;",
-          hashedUserData.map(({ username, name, avatar_url, password }) => [
-            username,
-            name,
-            avatar_url,
-            password,
-          ])
-        );
-        const usersPromise = db.query(insertUsersQueryStr);
-        return Promise.all([topicsPromise, usersPromise]);
-      });
+      const insertUsersQueryStr = format(
+        "INSERT INTO users (username, name, avatar_url, password) VALUES %L;",
+        userData.map(({ username, name, avatar_url, password }) => [
+          username,
+          name,
+          avatar_url,
+          password,
+        ])
+      );
+      const usersPromise = db.query(insertUsersQueryStr);
+      return Promise.all([topicsPromise, usersPromise]);
     })
     .then(() => {
       const formattedArticleData = articleData.map(convertTimestampToDate);
