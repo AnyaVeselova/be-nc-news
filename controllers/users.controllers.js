@@ -3,7 +3,6 @@ const {
   setAllUsers,
   selectUserByUsername,
   addUser,
-  generateToken,
 } = require("../models/users.models");
 const jwt = require("jsonwebtoken");
 
