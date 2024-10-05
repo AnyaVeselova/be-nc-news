@@ -34,13 +34,11 @@ exports.checkExists = (table, column, value) => {
   });
 };
 
-exports.hashPassword = async (userData) => {
+exports.hashedPassword = async (userData) => {
   const saltRounds = 10;
-  const hashedUserData = await Promise.all(
-    userData.map(async (user) => {
-      const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-      return { ...user, password: hashedPassword };
-    })
-  );
-  return hashedUserData;
+  const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+  return {
+    ...userData,
+    password: hashedPassword,
+  };
 };
