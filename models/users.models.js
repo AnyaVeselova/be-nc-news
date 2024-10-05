@@ -1,11 +1,4 @@
 const db = require("../db/connection");
-const jwt = require("jsonwebtoken");
-
-const JWT_SECRET = process.env.JWT_SECRET || "secret";
-
-const generateToken = (user) => {
-  return jwt.sign({ user }, JWT_SECRET, { expiresIn: "1d" });
-};
 
 exports.setAllUsers = () => {
   return db.query("SELECT * FROM users").then(({ rows }) => {
@@ -34,5 +27,3 @@ exports.addUser = (username, name, avatar_url, password) => {
       return rows[0];
     });
 };
-
-exports.generateToken = generateToken;

@@ -5,6 +5,13 @@ const {
   addUser,
   generateToken,
 } = require("../models/users.models");
+const jwt = require("jsonwebtoken");
+
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
+
+const generateToken = (user) => {
+  return jwt.sign({ user }, JWT_SECRET, { expiresIn: "1d" });
+};
 const { hashedPassword } = require("../db/seeds/utils");
 
 exports.getAllUsers = (req, res, next) => {
