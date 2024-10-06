@@ -56,8 +56,7 @@ exports.createUser = (req, res, next) => {
       return addUser(username, name, avatar_url, password);
     })
     .then((user) => {
-      const token = generateToken(user);
-      res.status(201).send({ user, token });
+      res.status(201).send(user);
     })
     .catch((error) => {
       console.error("Error during user creation:", error);

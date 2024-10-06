@@ -866,7 +866,7 @@ describe("Generic errors", () => {
 });
 
 describe("POST /api/signup", () => {
-  test("201: creates a new user and responds with user data and token", () => {
+  test.only("201: creates a new user and responds with user data and token", () => {
     const newUser = {
       username: "newuser",
       name: "New User",
@@ -888,6 +888,8 @@ describe("POST /api/signup", () => {
         });
         expect(user.password).toBeDefined(); // Ensure password is returned
         expect(token).toBeDefined();
+
+        console.log(user, token);
 
         // Verify the password matches the hashed password
         const isMatch = bcrypt.compareSync(newUser.password, user.password);
