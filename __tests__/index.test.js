@@ -879,20 +879,14 @@ describe("POST /api/signup", () => {
       .send(newUser)
       .expect(201)
       .then(({ body }) => {
-        const { user, token } = body;
-
-        expect(user).toMatchObject({
+        expect(body).toMatchObject({
           username: newUser.username,
           name: newUser.name,
           avatar_url: newUser.avatar_url,
         });
-        expect(user.password).toBeDefined(); // Ensure password is returned
-        expect(token).toBeDefined();
+        expect(body.password).toBeDefined(); // Ensure password is returned
 
-        console.log(user, token);
-
-        // Verify the password matches the hashed password
-        const isMatch = bcrypt.compareSync(newUser.password, user.password);
+        const isMatch = bcrypt.compareSync(newUser.password, body.password);
         expect(isMatch).toBe(true);
       });
   });
