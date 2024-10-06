@@ -32,8 +32,25 @@ exports.getUserByUsername = (req, res, next) => {
 
 exports.createUser = (req, res, next) => {
   const { username, name, avatar_url, password } = req.body;
+
+  if (!username || !name || !avatar_url || !password) {
+    return res.status(400).json({ msg: "All fields are required" });
+  }
   const userData = { username, name, avatar_url, password };
-  hashedPassword(userData)
+
+  selectUserByUsername(username)
+    .then(() => {
+      // If user exists, handle it
+      throw new Error("username already exists");
+    })
+    .catch((error) => {
+      if (error.status === 404) {
+        // User not found, proceed to hashing
+        return hashedPassword(userData);
+      } else {
+        throw error; // Re-throw if the error is not user-not-found
+      }
+    })
     .then((hashedUser) => {
       const { username, name, avatar_url, password } = hashedUser;
       return addUser(username, name, avatar_url, password);
@@ -44,10 +61,12 @@ exports.createUser = (req, res, next) => {
     })
     .catch((error) => {
       console.error("Error during user creation:", error);
+      if (error.message === "Username already exists") {
+        return res.status(409).send({ msg: "Username already exists" });
+      }
       next(error);
     });
 };
-
 exports.loginUser = (req, res, next) => {
   const { username, password } = req.body;
   selectUserByUsername(username)

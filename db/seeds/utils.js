@@ -36,9 +36,14 @@ exports.checkExists = (table, column, value) => {
 
 exports.hashedPassword = async (userData) => {
   const saltRounds = 10;
+
+  if (!userData.password) {
+    throw new Error("Password is required");
+  }
+
   const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
   return {
     ...userData,
     password: hashedPassword,
-  }.catch((error) => console.error("Error hashing password:", error));
+  };
 };

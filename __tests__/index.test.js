@@ -5,6 +5,8 @@ const app = require("../app");
 const request = require("supertest");
 const endpointsJSON = require("../endpoints.json");
 const { values } = require("../db/data/test-data/articles");
+const { password } = require("pg/lib/defaults");
+const bcrypt = require("bcryptjs");
 require("jest-sorted");
 
 beforeEach(() => {
@@ -859,6 +861,46 @@ describe("Generic errors", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Route not found");
+      });
+  });
+});
+
+describe("POST /api/signup", () => {
+  test("201: creates a new user and responds with user data and token", () => {
+    const newUser = {
+      username: "newuser",
+      name: "New User",
+      avatar_url: "http://example.com/avatar.png",
+      password: "password123",
+    };
+
+    return request(app)
+      .post("/api/users/signup")
+      .send(newUser)
+      .expect(201)
+      .then(({ body }) => {
+        const { user, token } = body;
+
+        expect(user).toMatchObject({
+          username: newUser.username,
+          name: newUser.name,
+          avatar_url: newUser.avatar_url,
+        });
+        expect(user.password).toBeDefined(); // Ensure password is returned
+        expect(token).toBeDefined();
+
+        // Verify the password matches the hashed password
+        const isMatch = bcrypt.compareSync(newUser.password, user.password);
+        expect(isMatch).toBe(true);
+      });
+  });
+  test("400: responds with an error if required fields are missing", () => {
+    return request(app)
+      .post("/api/users/signup")
+      .send({ username: "newuser" }) // Missing other fields
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("All fields are required");
       });
   });
 });
