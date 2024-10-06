@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs/dist/bcrypt");
+const bcrypt = require("bcryptjs");
 const {
   setAllUsers,
   selectUserByUsername,

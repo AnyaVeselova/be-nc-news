@@ -40,5 +40,5 @@ exports.hashedPassword = async (userData) => {
   return {
     ...userData,
     password: hashedPassword,
-  };
+  }.catch((error) => console.error("Error hashing password:", error));
 };
